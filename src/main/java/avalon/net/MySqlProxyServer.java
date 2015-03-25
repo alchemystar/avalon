@@ -14,7 +14,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 /**
  * Created by lizhuyang on 2015/1/28.
  */
-public class TcpProxyServer {
+public class MySqlProxyServer {
     private static final int port = 8080;
 
     public void start()  {
@@ -22,6 +22,7 @@ public class TcpProxyServer {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
+            //这边的childHandler是用来管理accept的
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 1024).childHandler(new FrontConnFactory());
             ChannelFuture f = b.bind(port).sync();
