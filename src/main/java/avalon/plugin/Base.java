@@ -1,12 +1,15 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.plugin;
-
 /*
  * Create an empty abstract class to allow plugins to only
  * implement their required differences.
  */
 import org.apache.log4j.Logger;
 import java.io.IOException;
-import com.github.mpjct.jmpjct.Engine;
+
+import avalon.Engine;
 
 public abstract class Base {
     public Logger logger = Logger.getLogger("Plugin.Base");

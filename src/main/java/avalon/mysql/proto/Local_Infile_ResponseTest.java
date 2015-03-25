@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.mysql.proto;
 
 import org.junit.*;

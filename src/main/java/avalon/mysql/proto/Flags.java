@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.mysql.proto;
 
 /*
@@ -48,6 +51,10 @@ public class Flags {
     public static final int MODE_READ_QUERY_RESULT                  = 9;  // Read the result set from the server and and process it
     public static final int MODE_SEND_QUERY_RESULT                  = 10; // Send a result set to the client
     public static final int MODE_CLEANUP                            = 11; // Connection closed
+    public static final byte MODE_COL_COUNT                         = 12;
+    public static final byte MODE_COLUMN_NAMES                      = 13;
+    public static final byte MODE_ROWS                              = 14;
+    public static final byte RESULT_SET_EOF                         = 15;
 
     // Packet types
     public static final byte COM_SLEEP                              = (byte)0x00; // deprecated

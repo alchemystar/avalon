@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.plugin.example;
 
 /*
@@ -6,13 +9,13 @@ package avalon.plugin.example;
 
 import java.util.Date;
 import org.apache.log4j.Logger;
-import com.github.mpjct.jmpjct.plugin.Base;
-import com.github.mpjct.jmpjct.Engine;
 
-import com.github.mpjct.jmpjct.mysql.proto.Flags;
-import com.github.mpjct.jmpjct.mysql.proto.ResultSet;
-import com.github.mpjct.jmpjct.mysql.proto.Column;
-import com.github.mpjct.jmpjct.mysql.proto.Row;
+import avalon.Engine;
+import avalon.mysql.proto.Column;
+import avalon.mysql.proto.Flags;
+import avalon.mysql.proto.ResultSet;
+import avalon.mysql.proto.Row;
+import avalon.plugin.Base;
 
 public class ResultSetExample extends Base {
 
@@ -20,18 +23,20 @@ public class ResultSetExample extends Base {
         this.logger = Logger.getLogger("Plugin.Example.ResultSetExample");
     }
     
-    public void read_query(Engine context) {
+    public void read_query_result(Engine context) {
         this.logger.info("Plugin->read_query");
-        
-        ResultSet rs = new ResultSet();
-        
-        Column col = new Column("Fake Data");
-        rs.addColumn(col);
-        
-        rs.addRow(new Row("1")); 
-        
-        context.clear_buffer();
-        context.buffer = rs.toPackets();
-        context.nextMode = Flags.MODE_SEND_QUERY_RESULT;
+
+        if(context.query.indexOf("select")>=0) {
+
+            ResultSet rs = new ResultSet();
+
+            Column col = new Column("Fake Data");
+            rs.addColumn(col);
+
+            rs.addRow(new Row("You ars SB！！！"));
+            context.clear_buffer();
+            context.buffer = rs.toPackets();
+            context.nextMode = Flags.MODE_SEND_QUERY_RESULT;
+        }
     }
 }

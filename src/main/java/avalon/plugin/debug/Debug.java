@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.plugin.debug;
 
 /*
@@ -7,55 +10,57 @@ package avalon.plugin.debug;
 
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
-import com.github.mpjct.jmpjct.mysql.proto.Flags;
-import com.github.mpjct.jmpjct.mysql.proto.Packet;
-import com.github.mpjct.jmpjct.plugin.Base;
-import com.github.mpjct.jmpjct.Engine;
+
+import avalon.Engine;
+import avalon.mysql.proto.Flags;
+import avalon.mysql.proto.Packet;
+import avalon.plugin.Base;
 
 public class Debug extends Base {
     public Logger logger = Logger.getLogger("Plugin.Debug");
     
     public void read_handshake(Engine context) {
-        this.logger.debug("<- HandshakePacket");
-        this.logger.debug("   Server Version: "+context.handshake.serverVersion);
-        this.logger.debug("   Connection Id: "+context.handshake.connectionId);
-        this.logger.debug("   Server Capability Flags: "
+        System.out.println("<- HandshakePacket");
+        System.out.println("   Server Version: "+context.handshake.serverVersion);
+        System.out.println("   Connection Id: "+context.handshake.connectionId);
+        System.out.println("   Server Capability Flags: "
                           + Debug.dump_capability_flags(context.handshake.capabilityFlags));
     }
     
     public void read_auth(Engine context) {
-        this.logger.debug("-> AuthResponsePacket");
-        this.logger.debug("   Max Packet Size: "+context.authReply.maxPacketSize);
-        this.logger.debug("   User: "+context.authReply.username);
-        this.logger.debug("   Schema: "+context.authReply.schema);
+        System.out.println("-> AuthResponsePacket");
+        System.out.println("   Max Packet Size: "+context.authReply.maxPacketSize);
+        System.out.println("   User: "+context.authReply.username);
+        System.out.println("   Schema: "+context.authReply.schema);
         
-        this.logger.debug("   Client Capability Flags: "
+        System.out.println("   Client Capability Flags: "
                           + Debug.dump_capability_flags(context.authReply.capabilityFlags));
     }
     
     public void read_query(Engine context) {
-        switch (Packet.getType(context.buffer.get(context.buffer.size()-1))) {
+        switch (Packet.getType(context.buffer.get(context.buffer.size() - 1))) {
             case Flags.COM_QUIT:
-                this.logger.info("-> COM_QUIT");
+                System.out.println("-> COM_QUIT");
                 break;
             
             // Extract out the new default schema
             case Flags.COM_INIT_DB:
-                this.logger.info("-> USE "+context.schema);
+                System.out.println("-> USE "+context.schema);
                 break;
             
             // Query
             case Flags.COM_QUERY:
-                this.logger.info("-> "+context.query);
+                System.out.println("-> " + context.query);
                 break;
             
             default:
-                this.logger.debug("Packet is "+Packet.getType(context.buffer.get(context.buffer.size()-1))+" type.");
+                System.out.println("Packet is "+Packet.getType(context.buffer.get(context.buffer.size()-1))+" type.");
                 Debug.dump_buffer(context);
                 break;
         }
         context.buffer_result_set();
     }
+
     
     public void read_query_result(Engine context) {
         if (!context.bufferResultSet)
@@ -63,15 +68,15 @@ public class Debug extends Base {
         
         switch (Packet.getType(context.buffer.get(context.buffer.size()-1))) {
             case Flags.OK:
-                this.logger.info("<- OK");
+                System.out.println("<- OK");
                 break;
             
             case Flags.ERR:
-                this.logger.info("<- ERR");
+                System.out.println("<- ERR");
                 break;
             
             default:
-                this.logger.debug("Result set or Packet is "+Packet.getType(context.buffer.get(context.buffer.size()-1))+" type.");
+                System.out.println("Result set or Packet is "+Packet.getType(context.buffer.get(context.buffer.size()-1))+" type.");
                 break;
         }
     }

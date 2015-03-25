@@ -1,10 +1,14 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.mysql.proto;
 
+import java.util.ArrayList;
+
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.DecoderException;
 import org.apache.log4j.Logger;
-import java.util.ArrayList;
 
 public class Proto {
     public byte[] packet = null;

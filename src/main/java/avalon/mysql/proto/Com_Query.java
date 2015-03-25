@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.mysql.proto;
 
 import java.util.ArrayList;
@@ -24,6 +27,10 @@ public class Com_Query extends Packet {
         obj.query = proto.get_eop_str();
         
         return obj;
+    }
+
+    public static void changeSql(byte[] packet){
+
     }
     
 }

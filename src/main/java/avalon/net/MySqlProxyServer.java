@@ -35,7 +35,7 @@ public class MySqlProxyServer {
     }
 
     public static void main(String args[]){
-        TcpProxyServer proxyServer = new TcpProxyServer();
+        MySqlProxyServer proxyServer = new MySqlProxyServer();
         proxyServer.start();
     }
 }

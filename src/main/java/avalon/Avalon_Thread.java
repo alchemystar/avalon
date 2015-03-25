@@ -44,8 +44,8 @@ public class Avalon_Thread implements Runnable {
         String[] ps = new String[0];
         ExecutorService tp = Executors.newCachedThreadPool();
 
-        if (JMP.config.getProperty("plugins") != null) {
-            ps = JMP.config.getProperty("plugins").split(",");
+        if (Avalon.config.getProperty("plugins") != null) {
+            ps = Avalon.config.getProperty("plugins").split(",");
         }
 
         while (this.listening) {

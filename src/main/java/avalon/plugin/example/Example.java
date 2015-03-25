@@ -1,13 +1,16 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.plugin.example;
 
 /*
  * Example plugin. Just log timing information and hook names
  */
 
-import java.util.Date;
 import org.apache.log4j.Logger;
-import com.github.mpjct.jmpjct.plugin.Base;
-import com.github.mpjct.jmpjct.Engine;
+
+import avalon.Engine;
+import avalon.plugin.Base;
 
 public class Example extends Base {
     public Logger logger = Logger.getLogger("Plugin.Base");

@@ -1,14 +1,16 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon.mysql.proto;
 
-import org.junit.*;
 import static org.junit.Assert.*;
+
+import org.junit.*;
 
 public class Com_InitdbTest {
     @Test
     public void test1() {
-        byte[] packet = Proto.packet_string_to_bytes(""
-            + "05 00 00 00 02 74 65 73    74"
-        );
+        byte[] packet = Proto.packet_string_to_bytes("" + "05 00 00 00 02 74 65 73    74");
 
         Com_Initdb pkt = Com_Initdb.loadFromPacket(packet);
         assertArrayEquals(packet, pkt.toPacket());

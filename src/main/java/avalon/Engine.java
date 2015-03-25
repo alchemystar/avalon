@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ */
 package avalon;
 
 /*
@@ -12,10 +15,11 @@ import java.io.OutputStream;
 import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
-import com.github.mpjct.jmpjct.plugin.Base;
-import com.github.mpjct.jmpjct.mysql.proto.Handshake;
-import com.github.mpjct.jmpjct.mysql.proto.HandshakeResponse;
-import com.github.mpjct.jmpjct.mysql.proto.Flags;
+
+import avalon.mysql.proto.Flags;
+import avalon.mysql.proto.Handshake;
+import avalon.mysql.proto.HandshakeResponse;
+import avalon.plugin.Base;
 
 public class Engine implements Runnable {
     public Logger logger = Logger.getLogger("Engine");
@@ -172,7 +176,7 @@ public class Engine implements Runnable {
             this.logger.info("Exiting thread.");            
             this.clientSocket.close();
         }
-        catch (IOException e) {}
+        catch (IOException e) {e.printStackTrace();}
         finally {
             try {
                 this.clientSocket.close();
