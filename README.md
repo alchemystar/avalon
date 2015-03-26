@@ -1,1 +1,2 @@
 avalon
+MySql Proxy 基于Netty框架，全面解析MySql协议。插件式管理，可以通过伪装MySql协议来返回自己生成的结果集
