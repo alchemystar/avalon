@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 lizhuyang, Inc. All Rights Reserved.
  */
 package avalon.net.context;
 
