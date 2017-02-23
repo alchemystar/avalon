@@ -72,4 +72,9 @@ public class ConContext {
         this.buffer = new ArrayList<byte[]>();
     }
 
+    public long getSequenceId(){
+        sequenceId++;
+        sequenceId++;
+        return sequenceId;
+    }
 }

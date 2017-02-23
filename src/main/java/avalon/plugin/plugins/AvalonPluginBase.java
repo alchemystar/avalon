@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.plugin.plugins;
 
@@ -28,7 +28,7 @@ public abstract class AvalonPluginBase {
     public void read_auth_result(ConContext context) throws IOException {}
     public void send_auth_result(ConContext context) throws IOException {}
 
-    public void read_query(ConContext context) throws IOException {}
+    public boolean read_query(ConContext context) throws IOException {return false;}
     public void send_query(ConContext context) throws IOException {}
 
     public void read_query_result(ConContext context) throws IOException {}

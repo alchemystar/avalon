@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.mysql.proto;
 
@@ -48,6 +48,25 @@ public class Handshake extends Packet {
 
     public boolean hasStatusFlag(long flag) {
         return ((this.statusFlags & flag) == flag);
+    }
+
+    /**
+     * 依据qa47的handshake包做初始化
+     * @return
+     */
+    public static Handshake init(){
+        Handshake handshake = new Handshake();
+        handshake.protocolVersion=10;
+        handshake.serverVersion="5.1.63-log";
+        handshake.connectionId=211521;
+        handshake.challenge1="zh{SlDO?";
+        handshake.capabilityFlags=4160684032L;
+        handshake.characterSet=28;
+        handshake.statusFlags=2;
+        handshake.challenge2="";
+        handshake.authPluginDataLength=0;
+        handshake.authPluginName="/mXNa}p<uZB{";
+        return handshake;
     }
 
     public ArrayList<byte[]> getPayload() {
@@ -119,5 +138,21 @@ public class Handshake extends Packet {
         }
 
         return obj;
+    }
+
+    @Override
+    public String toString() {
+        return "Handshake{" +
+                "protocolVersion=" + protocolVersion +
+                ", serverVersion='" + serverVersion + '\'' +
+                ", connectionId=" + connectionId +
+                ", challenge1='" + challenge1 + '\'' +
+                ", capabilityFlags=" + capabilityFlags +
+                ", characterSet=" + characterSet +
+                ", statusFlags=" + statusFlags +
+                ", challenge2='" + challenge2 + '\'' +
+                ", authPluginDataLength=" + authPluginDataLength +
+                ", authPluginName='" + authPluginName + '\'' +
+                '}';
     }
 }

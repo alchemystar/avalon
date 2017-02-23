@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.net.handler;
 
@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import avalon.mysql.proto.Flags;
 import avalon.mysql.proto.Handshake;
+import avalon.mysql.proto.OK;
 import avalon.mysql.proto.Packet;
 import avalon.net.context.ConContext;
 import avalon.plugin.plugins.AvalonPluginBase;
@@ -18,7 +19,6 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -30,11 +30,11 @@ import io.netty.channel.ChannelOption;
 public class FrontConnHandler extends ChannelInboundHandlerAdapter {
 
     public Logger logger = Logger.getLogger("FrontConnHandler");
-
     private LinkedList<Object> buffer = new LinkedList<Object>();
     private Channel inboundChannel;
     private Channel outboundChannel;
-    private boolean outBoundChnnlReady = false;
+
+    public static int sequenceId = 0;
 
     public ArrayList<AvalonPluginBase> plugins = new ArrayList<AvalonPluginBase>();
 
@@ -50,37 +50,60 @@ public class FrontConnHandler extends ChannelInboundHandlerAdapter {
         Bootstrap b = new Bootstrap();
         b.group(inboundChannel.eventLoop()).channel(ctx.channel().getClass()).handler(new BackConnFactory(this))
                 .option(ChannelOption.SO_REUSEADDR, true).option(ChannelOption.SO_KEEPALIVE, true);
-        ChannelFuture f = b.connect("127.0.0.1", 3306);
         //出口连接
-        outboundChannel = f.channel();
+        //outboundChannel = f.channel();
+
+        //Now we send HandShake包first
+        writePacketToInBoundChannel(ctx, Handshake.init().toPacket());
         context.mode = Flags.MODE_READ_AUTH;
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!outBoundChnnlReady) {
-            return;
-        }
+        context.clear_buffer();
         byte[] packet = (byte[]) msg;
         context.packet = packet;
         switch (context.mode) {
             case Flags.MODE_READ_AUTH:
                 this.logger.trace("MODE_READ_HANDSHAKE");
                 context.mode = Flags.MODE_READ_QUERY;
-                for (AvalonPluginBase plugin : plugins) {
-                    plugin.read_auth(context);
-                }
+
+                //Now we get the auth packet
+                //we send a fake auth
+                ArrayList<byte[]> okPacket = new ArrayList<byte[]>();
+                okPacket.add(OK.init(Packet.getSequenceId(context.packet) + 1).toPacket());
+                context.buffer = okPacket;
                 break;
             case Flags.MODE_READ_QUERY:
                 this.logger.trace("MODE_READ_AUTH_RESULT");
                 for (AvalonPluginBase plugin : plugins) {
-                    plugin.read_query(context);
+                    if (!plugin.read_query(context)) {
+                        break;
+                    }
                 }
-                packet = context.packet;
                 break;
 
         }
-        writePacketToOutBoundChannel(ctx, packet);
+        writePacketToInBoundChannel(ctx, context.buffer);
+
+    }
+
+    private void writePacketToInBoundChannel(ChannelHandlerContext ctx, ArrayList<byte[]> buffer) {
+        ByteBuf bufferToFlash = null;
+        System.out.println("bufferSize=" + buffer.size());
+        for (byte[] buf : buffer) {
+            bufferToFlash = ctx.alloc().buffer(buf.length);
+            bufferToFlash.writeBytes(buf);
+            inboundChannel.writeAndFlush(bufferToFlash);
+        }
+
+    }
+
+    private void writePacketToInBoundChannel(ChannelHandlerContext ctx, byte[] packet) {
+        ByteBuf buffer = ctx.alloc().buffer(Packet.getSize(packet));
+        buffer.writeBytes(packet);
+        inboundChannel.writeAndFlush(buffer);
+
     }
 
     private void writePacketToOutBoundChannel(ChannelHandlerContext ctx, byte[] packet) {
@@ -109,19 +132,6 @@ public class FrontConnHandler extends ChannelInboundHandlerAdapter {
     public void closeOnFlush(Channel ch) {
         if (ch.isActive()) {
             ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-        }
-    }
-
-    public void outBoundChannelReady() {
-        synchronized(buffer) {
-            if (outboundChannel.isActive()) {
-                for (Object ojb : buffer) {
-                    outboundChannel.writeAndFlush(ojb);
-                }
-                buffer.clear();
-            }
-
-            outBoundChnnlReady = true;
         }
     }
 

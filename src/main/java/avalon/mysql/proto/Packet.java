@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.mysql.proto;
 
@@ -45,6 +45,13 @@ public abstract class Packet {
         }
 
         return packet;
+    }
+
+    public ArrayList<byte[]>  toPayLoad(){
+        byte[] temp1 = this.toPacket();
+        ArrayList<byte[]> payLoad = new ArrayList<byte[]>();
+        payLoad.add(temp1);
+        return payLoad;
     }
 
     public static int getSize(byte[] packet) {

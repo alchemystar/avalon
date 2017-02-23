@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.mysql.proto;
 
@@ -26,6 +26,14 @@ public class OK extends Packet {
     public boolean hasStatusFlag(long flag) {
         return ((this.statusFlags & flag) == flag);
     }
+
+    public static OK init(long sequenceId){
+        OK ok = new OK();
+        ok.sequenceId=sequenceId;
+        ok.setStatusFlag(2L);
+        return ok;
+    }
+
 
     public ArrayList<byte[]> getPayload() {
         ArrayList<byte[]> payload = new ArrayList<byte[]>();

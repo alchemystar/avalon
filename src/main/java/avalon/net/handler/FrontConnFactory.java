@@ -1,10 +1,11 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.net.handler;
 
 import java.util.ArrayList;
 
+import avalon.plugin.example.ResultSetExample;
 import avalon.plugin.plugins.AvalonPluginBase;
 import avalon.plugin.plugins.AvalonProxy;
 import io.netty.channel.ChannelInitializer;
@@ -20,6 +21,7 @@ public class FrontConnFactory  extends ChannelInitializer<SocketChannel> {
         ArrayList<AvalonPluginBase> baseList = new ArrayList<AvalonPluginBase>();
         FrontConnHandler handler = new FrontConnHandler();
         baseList.add(new AvalonProxy());
+        baseList.add(new ResultSetExample());
         handler.setPlugins(baseList);
         ch.pipeline().addLast(new PacketDecoder(),handler);
     }

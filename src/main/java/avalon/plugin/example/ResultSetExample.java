@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.plugin.example;
 
@@ -7,36 +7,35 @@ package avalon.plugin.example;
  * Example plugin. Return a fake result set for every query
  */
 
-import java.util.Date;
-import org.apache.log4j.Logger;
+import avalon.mysql.proto.*;
+import avalon.net.context.ConContext;
+import avalon.plugin.plugins.AvalonPluginBase;
 
-import avalon.Engine;
-import avalon.mysql.proto.Column;
-import avalon.mysql.proto.Flags;
-import avalon.mysql.proto.ResultSet;
-import avalon.mysql.proto.Row;
-import avalon.plugin.Base;
+import java.util.ArrayList;
 
-public class ResultSetExample extends Base {
 
-    public void init(Engine context) {
-        this.logger = Logger.getLogger("Plugin.Example.ResultSetExample");
-    }
+public class ResultSetExample extends AvalonPluginBase {
+
     
-    public void read_query_result(Engine context) {
-        this.logger.info("Plugin->read_query");
+    public boolean read_query(ConContext context) {
+        ResultSet rs = new ResultSet();
+        rs.sequenceId = Packet.getSequenceId(context.packet) + 1;
+        if(context.query.equals("show databases")){
+            Column col = new Column("DataBases");
+            rs.addColumn(col);
+            rs.addRow(new Row("saber"));
+            rs.addRow(new Row("archer"));
+            rs.addRow(new Row("lancer"));
 
-        if(context.query.indexOf("select")>=0) {
-
-            ResultSet rs = new ResultSet();
-
+        }else {
             Column col = new Column("Fake Data");
             rs.addColumn(col);
 
             rs.addRow(new Row("You ars SB！！！"));
-            context.clear_buffer();
-            context.buffer = rs.toPackets();
-            context.nextMode = Flags.MODE_SEND_QUERY_RESULT;
         }
+        context.clear_buffer();
+        context.buffer = rs.toPackets();
+        return true;
+
     }
 }

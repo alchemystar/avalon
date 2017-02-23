@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.mysql.proto;
 
@@ -55,6 +55,34 @@ public class ResultSet {
         this.sequenceId++;
         packets.add(eof.toPacket());
         
+        return packets;
+    }
+
+    public ArrayList<byte[]> toPacketForFieldList() {
+        ArrayList<byte[]> packets = new ArrayList<byte[]>();
+
+        long maxRowSize = 0;
+
+        for (Column col: this.columns) {
+            long size = col.toPacket().length;
+            if (size > maxRowSize)
+                maxRowSize = size;
+        }
+
+        maxRowSize = 0;
+
+        for (Column col: this.columns) {
+            col.sequenceId = this.sequenceId;
+            col.columnLength = maxRowSize;
+            this.sequenceId++;
+            packets.add(col.toPacket());
+        }
+
+        EOF eof = new EOF();
+        eof.sequenceId = this.sequenceId;
+        this.sequenceId++;
+        packets.add(eof.toPacket());
+
         return packets;
     }
     

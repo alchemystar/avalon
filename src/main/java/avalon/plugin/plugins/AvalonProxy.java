@@ -1,16 +1,12 @@
 /*
- * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+ * Copyright (C) 2015 alchemystar, Inc. All Rights Reserved.
  */
 package avalon.plugin.plugins;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-import avalon.mysql.proto.Com_Initdb;
-import avalon.mysql.proto.Com_Query;
-import avalon.mysql.proto.Flags;
-import avalon.mysql.proto.Handshake;
-import avalon.mysql.proto.HandshakeResponse;
-import avalon.mysql.proto.Packet;
+import avalon.mysql.proto.*;
 import avalon.net.context.ConContext;
 
 /**
@@ -56,32 +52,38 @@ public class AvalonProxy extends AvalonPluginBase {
     }
 
     @Override
-    public void read_query(ConContext context) throws IOException {
+    public boolean read_query(ConContext context) throws IOException {
         Com_Query query = Com_Query.loadFromPacket(context.packet);
         switch (Packet.getType(context.packet)) {
             case Flags.COM_QUIT:
-                this.logger.trace("COM_QUIT");
-                break;
-
+                System.out.println("COM_QUIT");
+                return false;
             // Extract out the new default schema
             case Flags.COM_INIT_DB:
-                this.logger.trace("COM_INIT_DB");
+                System.out.println("COM_INIT_DB");
                 context.schema = Com_Initdb.loadFromPacket(context.packet).schema;
-                break;
+                System.out.println(Packet.getSequenceId(context.packet));
+                ArrayList<byte[]> okPacket = new ArrayList<byte[]>();
+                okPacket.add(new byte[] { 7, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0 });
+                context.buffer= okPacket;
+                System.out.println("cominit"+context.buffer.size());
+                return false;
 
             // Query
             case Flags.COM_QUERY:
-                this.logger.trace("COM_QUERY");
-                if (query.query.indexOf("select") >= 0) {
-                    query.query = "select * from t_sequence";
-                } else {
-                    System.out.println("query=" + query.query);
-                }
-                context.packet=query.toPacket();
-                break;
+                System.out.println("query=" + query.query);
+                context.query=query.query;
+                return true;
 
+            case Flags.COM_FIELD_LIST:
+                FieldListResult rs = new FieldListResult();
+                Column col = new Column("DataBases");
+                rs.addColumn(col);
+                context.buffer=rs.toPackets();
+                return false;
             default:
-                break;
+                System.out.println("Type="+Packet.getType(context.packet));
+                return false;
         }
     }
 
