@@ -35,7 +35,6 @@ public class BackConnHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         context.mode = Flags.MODE_READ_HANDSHAKE;
-        frontConnHandler.outBoundChannelReady();
     }
 
     @Override
